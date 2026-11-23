@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Kwitansi - PG Tour & Travel</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandPrimary: '#C83E00',
+            brandOrange: '#F36700',
+            brandBg: '#F8FAFC'
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Style Watermark Logo Multi-Halaman */
+    .kwitansi-watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      width: 320px;
+      opacity: 0.04;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background-color: white !important; padding: 0 !important; }
+      .print-shadow-none { box-shadow: none !important; border: none !important; padding: 0 !important; }
+      .kwitansi-watermark { 
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) rotate(-15deg) !important;
+        width: 350px !important;
+        opacity: 0.05 !important; 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact; 
+      }
+      th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800">
+
+  <!-- CONTAINER UTAMA -->
+  <div class="max-w-7xl mx-auto p-4 md:p-8">
+    
+    <!-- HEADER APP -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 no-print">
+      <!-- Logo & Judul Sistem -->
+      <div class="flex items-center gap-3.5">
+        <img src="logo.png" alt="PG Tour & Travel Logo" class="h-11 w-auto object-contain flex-shrink-0" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'44\' height=\'44\' viewBox=\'0 0 44 44\'><rect width=\'100%\' height=\'100%\' rx=\'10\' fill=\'%23C83E00\'/><text x=\'50%\' y=\'50%\' fill=\'white\' font-size=\'10\' font-weight=\'bold\' text-anchor=\'middle\' dominant-baseline=\'middle\' font-family=\'sans-serif\'>PG TOUR</text></svg>';">
+        <div>
+          <h1 class="text-xl font-bold text-black leading-tight">Kwitansi Generator System</h1>
+          <p class="text-xs text-slate-500 font-medium">PG Tour & Travel • The Best Choice</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons & Status -->
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> System Active
+        </span>
+        <button onclick="window.print()" class="bg-brandPrimary hover:bg-[#a63300] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition shadow-lg shadow-brandPrimary/20 flex items-center gap-2">
+          <i class="fa-solid fa-print"></i> Cetak / PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- FORM INPUT (Kiri) -->
+      <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 no-print space-y-5 h-fit">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-black flex items-center gap-2">
+            <i class="fa-solid fa-sliders"></i> Parameter Transaksi
+          </h2>
+        </div>
+        
+        <!-- Input Header Transaksi -->
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nomor Kwitansi</label>
+              <input type="text" id="in-no" value="#002/KWT/PGT/XI/2026" oninput="updateKwitansiHeader()" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brandPrimary focus:bg-white outline-none transition">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nama Customer</label>
+              <input type="text" id="in-client" value="Budi Santoso" oninput="updateKwitansiHeader()" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brandPrimary focus:bg-white outline-none transition">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nomor HP / WA</label>
+              <input type="text" id="in-phone" value="081234567890" oninput="updateKwitansiHeader()" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brandPrimary focus:bg-white outline-none transition">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Status Payment</label>
+              <input type="text" id="in-terms" value="Lunas" oninput="updateKwitansiHeader()" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brandPrimary focus:bg-white outline-none transition">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Tanggal Terbit</label>
+              <input type="date" id="in-tgl" onchange="updateKwitansiHeader()" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brandPrimary focus:bg-white outline-none transition">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Tanggal Pelunasan</label>
+              <input type="date" id="in-tempo" onchange="updateKwitansiHeader()" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brandPrimary focus:bg-white outline-none transition">
+            </div>
+          </div>
+
+          <!-- Input Nama Pengesah & Jabatan -->
+          <div class="grid grid-cols-2 gap-3 pt-1 border-t border-slate-100">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nama Pengesah</label>
+              <input type="text" id="in-mgm-name" value="Admin PG Trans" oninput="updateKwitansiHeader()" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brandPrimary focus:bg-white outline-none transition">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Jabatan / Role</label>
+              <input type="text" id="in-mgm-role" value="Management" oninput="updateKwitansiHeader()" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brandPrimary focus:bg-white outline-none transition">
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Tambah Item -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-black flex items-center gap-1.5">
+            <i class="fa-solid fa-plus-circle text-emerald-600"></i> Tambah Layanan / Armada
+          </h3>
+          
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Deskripsi Layanan</label>
+            <textarea id="add-desc" placeholder="Contoh: Innova Reborn (Blitar - Yogyakarta) Plat AG 1976 MC Inc. Driver & BBM" class="w-full bg-white border border-slate-200 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-brandPrimary" rows="2"></textarea>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Qty</label>
+              <input type="number" id="add-qty" value="1" min="1" class="w-full bg-white border border-slate-200 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-brandPrimary text-center font-semibold">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Hari</label>
+              <input type="number" id="add-day" value="1" min="1" class="w-full bg-white border border-slate-200 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-brandPrimary text-center font-semibold">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Harga (Rp)</label>
+              <input type="number" id="add-price" placeholder="0" class="w-full bg-white border border-slate-200 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-brandPrimary font-semibold">
+            </div>
+          </div>
+
+          <button type="button" onclick="addItem()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20">
+            <i class="fa-solid fa-cart-plus"></i> Masukkan Ke Kwitansi
+          </button>
+        </div>
+
+        <!-- INPUT LAMPIRAN FOTO UNIT ARMADA -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 space-y-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-brandPrimary flex items-center gap-1.5">
+            <i class="fa-solid fa-camera text-brandOrange"></i> Lampiran Foto Unit Armada
+          </h3>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Foto Unit (Maks. 2 Foto)</label>
+            <input type="file" id="in-unit-photo" accept="image/*" multiple onchange="handleUnitPhotosUpload(this)" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brandPrimary file:text-white hover:file:bg-[#a63300] cursor-pointer">
+          </div>
+        </div>
+
+        <!-- Section Uang Muka (DP) -->
+        <div class="pt-2">
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Down Payment / DP (Rp)</label>
+          <input type="number" id="in-dp" value="0" oninput="renderItems()" class="w-full border border-slate-200 p-2.5 rounded-lg text-sm font-bold text-emerald-700 bg-emerald-50/30 focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+      </div>
+
+      <!-- PREVIEW INVOICE (Kanan) -->
+      <div class="lg:col-span-7 flex justify-center">
+        <div id="invoice-preview" class="relative bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-slate-200/80 w-full max-w-[780px] text-slate-800 flex flex-col justify-between print-shadow-none overflow-hidden" style="min-height: 900px;">
+          
+          <!-- Watermark Logo Multi-Halaman -->
+          <div class="invoice-watermark">
+            <img src="logo.png" alt="Watermark Logo" class="w-full h-auto object-contain" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\' viewBox=\'0 0 300 300\'><rect width=\'100%\' height=\'100%\' rx=\'30\' fill=\'%23C83E00\'/><text x=\'50%\' y=\'50%\' fill=\'white\' font-size=\'22\' font-weight=\'bold\' text-anchor=\'middle\' dominant-baseline=\'middle\' font-family=\'sans-serif\'>PG TOUR & TRAVEL</text></svg>';">
+          </div>
+
+          <div class="relative z-10">
+            <!-- Header Invoice -->
+            <div class="flex justify-between items-start border-b-2 border-slate-100 pb-5 mb-6">
+              <div>
+                <h2 class="text-2xl font-black text-brandPrimary tracking-tight">PG TOUR & TRAVEL</h2>
+                <p class="text-[11px] text-black font-bold uppercase tracking-wider">The Best Choice</p>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Jl. Barito No. 51, Kota Blitar<br>
+                  <i class="fa-brands fa-whatsapp text-emerald-600"></i> 085335540888 | <i class="fa-regular fa-envelope text-slate-400"></i> www.sewamobilblitar.com
+                </p>
+              </div>
+              <div class="text-right">
+                <span class="text-3xl font-black tracking-tight text-brandOrange block">KWITANSI</span>
+                <span id="out-no" class="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md inline-block mt-1">#002/KWT/PJG/XI/2026</span>
+              </div>
+            </div>
+
+            <!-- Meta Data Info -->
+            <div class="grid grid-cols-2 gap-4 mb-6 text-xs bg-slate-50/80 p-4 rounded-xl border border-slate-100">
+              <div>
+                <p class="text-slate-400 font-bold uppercase tracking-wider text-[10px] mb-1">Telah diterima dari:</p>
+                <p id="out-client" class="font-extrabold text-sm text-slate-800">Budi Santoso</p>
+                <p id="out-phone" class="text-slate-500 font-medium">081234567890</p>
+              </div>
+              <div class="text-right space-y-1">
+                <p><span class="text-slate-400">Tanggal Terbit:</span> <span id="out-tgl" class="font-bold text-slate-700">-</span></p>
+                <p><span class="text-slate-400">Tanggal Pelunasan:</span> <span id="out-tempo" class="font-bold text-slate-700">-</span></p>
+                <p><span class="text-slate-400">Status Payment:</span> <span id="out-terms" class="font-bold text-black">-</span></p>
+              </div>
+            </div>
+
+            <!-- TABEL DETAIL ITEM -->
+            <table class="w-full text-left text-xs mb-6 border-collapse">
+              <thead>
+                <tr class="bg-brandPrimary text-white uppercase text-[11px] tracking-wider">
+                  <th class="p-3 w-8 text-center rounded-l-lg">NO</th>
+                  <th class="p-3">DESKRIPSI LAYANAN / ARMADA</th>
+                  <th class="p-3 w-10 text-center">QTY</th>
+                  <th class="p-3 w-12 text-center">HARI</th>
+                  <th class="p-3 w-28 text-right">HARGA (RP)</th>
+                  <th class="p-3 w-28 text-right">TOTAL (RP)</th>
+                  <th class="p-3 w-8 text-center no-print rounded-r-lg"></th>
+                </tr>
+              </thead>
+              <tbody id="out-items-body" class="divide-y divide-slate-100">
+                <!-- Data item dimasukkan dinamis via JavaScript -->
+              </tbody>
+            </table>
+
+            <!-- Summary Table -->
+            <div class="flex justify-end mb-6">
+              <div class="w-full sm:w-1/2 text-xs space-y-2 bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                <div class="flex justify-between text-slate-600">
+                  <span>Subtotal Total:</span>
+                  <span id="out-subtotal" class="font-bold text-slate-800">Rp 0</span>
+                </div>
+                <div class="flex justify-between text-emerald-600">
+                  <span>Down Payment (DP):</span>
+                  <span id="out-dp" class="font-bold">- Rp 0</span>
+                </div>
+                <div class="flex justify-between text-sm font-extrabold border-t border-slate-200 pt-2 text-black">
+                  <span>SISA PELUNASAN:</span>
+                  <span id="out-sisa" class="text-black">Rp 0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- LAMPIRAN FOTO UNIT PREVIEW -->
+            <div id="unit-photos-wrapper" class="hidden mb-6 bg-slate-50/80 border border-slate-200/80 rounded-xl p-4">
+              <div class="flex items-center gap-2 font-bold text-brandPrimary uppercase tracking-wider border-b border-slate-200/60 pb-2 text-[11px] mb-3">
+                <i class="fa-solid fa-bus text-brandOrange"></i>
+                <span>Lampiran Foto Unit Armada</span>
+              </div>
+              <div id="unit-photos-grid" class="grid grid-cols-2 gap-3">
+                <!-- Foto unit dimasukkan di sini oleh JS -->
+              </div>
+            </div>
+
+              <div class="pt-2 border-t border-slate-200/60 text-center font-bold text-brandPrimary text-[11px] tracking-wide">
+                Terima kasih telah memilih <span class="text-brandOrange">PG Tour & Travel</span> — <i>The Best Choice!</i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer & Tanda Tangan Ganda (Interactive Upload) -->
+          <div class="relative z-10 border-t border-slate-100 pt-4 text-xs">
+            <div class="flex justify-between items-start">
+              
+              <!-- TTD Customer (Sisi Kiri) -->
+              <div class="text-center w-44">
+                <p class="text-[11px] text-slate-500 mb-0.5 invisible">Lokasi, -</p>
+                <p class="text-[11px] font-semibold text-slate-700">Penyewa / Customer,</p>
+                <p class="text-[10px] text-slate-400 mb-1">Tanda Terima</p>
+                
+                <!-- Area TTD Customer -->
+                <div class="h-14 flex items-center justify-center relative my-1">
+                  <input type="file" id="sig-cust-file" accept="image/*" class="hidden" onchange="previewSignature(this, 'sig-cust-img')">
+                  <img id="sig-cust-img" src="" class="max-h-14 max-w-full object-contain hidden">
+                  <button type="button" onclick="document.getElementById('sig-cust-file').click()" class="no-print text-[10px] text-slate-400 border border-dashed border-slate-300 rounded px-2.5 py-1 hover:border-brandPrimary hover:text-brandPrimary transition flex items-center gap-1">
+                    <i class="fa-solid fa-signature"></i> + TTD Customer
+                  </button>
+                </div>
+
+                <p id="out-sig-customer" class="font-bold text-slate-800 border-b border-slate-400 pb-0.5">( Budi Santoso )</p>
+                <p class="text-[10px] text-slate-400 mt-0.5">Customer</p>
+              </div>
+
+              <!-- TTD Management (Sisi Kanan) -->
+              <div class="text-center w-44">
+                <p class="text-[11px] text-slate-500 mb-0.5"><span id="out-tgl-ttd">-</span></p>
+                <p class="text-[11px] font-semibold text-slate-700">Hormat Kami,</p>
+                <p class="text-[10px] text-slate-400 mb-1">PG Tour & Travel</p>
+                
+                <!-- Area TTD Management -->
+                <div class="h-14 flex items-center justify-center relative my-1">
+                  <input type="file" id="sig-mgm-file" accept="image/*" class="hidden" onchange="previewSignature(this, 'sig-mgm-img')">
+                  <img id="sig-mgm-img" src="" class="max-h-14 max-w-full object-contain hidden">
+                  <button type="button" onclick="document.getElementById('sig-mgm-file').click()" class="no-print text-[10px] text-slate-400 border border-dashed border-slate-300 rounded px-2.5 py-1 hover:border-brandPrimary hover:text-brandPrimary transition flex items-center gap-1">
+                    <i class="fa-solid fa-file-signature"></i> + TTD / Stempel
+                  </button>
+                </div>
+
+                <p id="out-sig-mgm" class="font-bold text-slate-800 border-b border-slate-400 pb-0.5">( Admin PG Trans )</p>
+                <p id="out-role-mgm" class="text-[10px] text-slate-400 mt-0.5">Management</p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // DEFAULT ITEM MENGGUNAKAN DASH (-) DAN HARGA 0
+    let items = [
+      { desc: "-", qty: 1, day: 1, price: 0 }
+    ];
+
+    // Array Penyimpan Offset Posisi Vertikal Foto Unit
+    let unitPhotoOffsets = [50, 50];
+
+    // Format Tanggal DD/MM/YYYY
+    function formatDateDDMMYYYY(dateStr) {
+      if (!dateStr) return '-';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    // Preview Gambar TTD / Stempel
+    function previewSignature(input, targetImgId) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById(targetImgId);
+          img.src = e.target.result;
+          img.classList.remove('hidden');
+          
+          const btn = input.parentElement.querySelector('button');
+          if (btn) {
+            btn.classList.add('hidden');
+          }
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    // Handler Upload & Preview Foto Unit Armada
+    function handleUnitPhotosUpload(input) {
+      const wrapper = document.getElementById('unit-photos-wrapper');
+      const grid = document.getElementById('unit-photos-grid');
+      grid.innerHTML = '';
+
+      if (input.files && input.files.length > 0) {
+        wrapper.classList.remove('hidden');
+        const files = Array.from(input.files).slice(0, 2);
+
+        files.forEach((file, index) => {
+          unitPhotoOffsets[index] = 50;
+
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const container = document.createElement('div');
+            container.className = 'relative group rounded-lg overflow-hidden border border-slate-200 shadow-sm';
+
+            container.innerHTML = `
+              <img id="unit-img-${index}" src="${e.target.result}" class="w-full h-36 object-cover rounded-lg transition-all duration-200" style="object-position: center 50%;">
+              
+              <div class="no-print absolute top-1.5 right-1.5 bg-slate-900/80 backdrop-blur-sm rounded-lg p-1 flex flex-col gap-1 shadow-md">
+                <button type="button" onclick="adjustPhotoPosition(${index}, -10)" title="Geser Tampilan ke Atas" class="text-white hover:text-brandOrange text-xs font-bold w-6 h-6 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded transition">
+                  <i class="fa-solid fa-chevron-up"></i>
+                </button>
+                <button type="button" onclick="adjustPhotoPosition(${index}, 10)" title="Geser Tampilan ke Bawah" class="text-white hover:text-brandOrange text-xs font-bold w-6 h-6 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded transition">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+              </div>
+            `;
+            grid.appendChild(container);
+          }
+          reader.readAsDataURL(file);
+        });
+      } else {
+        wrapper.classList.add('hidden');
+      }
+    }
+
+    // Fungsi Penggeser Posisi Vertikal Foto
+    function adjustPhotoPosition(index, step) {
+      if (unitPhotoOffsets[index] === undefined) unitPhotoOffsets[index] = 50;
+      
+      unitPhotoOffsets[index] = Math.max(0, Math.min(100, unitPhotoOffsets[index] + step));
+      
+      const img = document.getElementById(`unit-img-${index}`);
+      if (img) {
+        img.style.objectPosition = `center ${unitPhotoOffsets[index]}%`;
+      }
+    }
+
+    function addItem() {
+      const descInput = document.getElementById('add-desc');
+      const qtyInput = document.getElementById('add-qty');
+      const dayInput = document.getElementById('add-day');
+      const priceInput = document.getElementById('add-price');
+
+      const desc = descInput.value.trim();
+      const qty = parseFloat(qtyInput.value) || 1;
+      const day = parseFloat(dayInput.value) || 1;
+      const price = parseFloat(priceInput.value) || 0;
+
+      if (!desc) {
+        alert("Harap isi deskripsi layanan terlebih dahulu!");
+        return;
+      }
+
+      // Jika item pertama masih tanda "-", ganti langsung dengan item baru
+      if (items.length === 1 && items[0].desc === "-") {
+        items = [{ desc, qty, day, price }];
+      } else {
+        items.push({ desc, qty, day, price });
+      }
+
+      descInput.value = '';
+      qtyInput.value = '1';
+      dayInput.value = '1';
+      priceInput.value = '';
+
+      renderItems();
+    }
+
+    function removeItem(index) {
+      items.splice(index, 1);
+      
+      // Jika semua item dihapus, kembalikan ke tanda "-"
+      if (items.length === 0) {
+        items = [{ desc: "-", qty: 1, day: 1, price: 0 }];
+      }
+      
+      renderItems();
+    }
+
+    function renderItems() {
+      const formatRupiah = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+
+      const tbody = document.getElementById('out-items-body');
+      tbody.innerHTML = '';
+
+      let subtotal = 0;
+
+      items.forEach((item, index) => {
+        const totalItem = item.qty * item.day * item.price;
+        subtotal += totalItem;
+
+        const formattedDesc = item.desc.replace(/\n/g, '<br>');
+
+        const tr = `
+          <tr class="hover:bg-slate-50/50 transition">
+            <td class="p-3 text-center text-slate-400 font-medium">${index + 1}</td>
+            <td class="p-3 font-medium text-slate-800 leading-relaxed">${formattedDesc}</td>
+            <td class="p-3 text-center font-medium">${item.qty}</td>
+            <td class="p-3 text-center font-medium">${item.day}</td>
+            <td class="p-3 text-right font-medium">${formatRupiah(item.price)}</td>
+            <td class="p-3 text-right font-bold text-slate-900">${formatRupiah(totalItem)}</td>
+            <td class="p-3 text-center no-print">
+              <button onclick="removeItem(${index})" title="Hapus Item" class="text-rose-400 hover:text-rose-600 font-bold px-2 py-1 rounded hover:bg-rose-50 transition">
+                ✕
+              </button>
+            </td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', tr);
+      });
+
+      const dp = parseFloat(document.getElementById('in-dp').value) || 0;
+      const sisa = subtotal - dp;
+
+      document.getElementById('out-subtotal').innerText = formatRupiah(subtotal);
+      document.getElementById('out-dp').innerText = '- ' + formatRupiah(dp);
+      document.getElementById('out-sisa').innerText = formatRupiah(sisa >= 0 ? sisa : 0);
+    }
+
+    function updateInvoiceHeader() {
+      document.getElementById('out-no').innerText = '#' + document.getElementById('in-no').value;
+      
+      const tglFormatted = formatDateDDMMYYYY(document.getElementById('in-tgl').value);
+      document.getElementById('out-tgl').innerText = tglFormatted;
+      document.getElementById('out-tgl-ttd').innerText = tglFormatted;
+      document.getElementById('out-tempo').innerText = formatDateDDMMYYYY(document.getElementById('in-tempo').value);
+      
+      document.getElementById('out-client').innerText = document.getElementById('in-client').value;
+      document.getElementById('out-phone').innerText = document.getElementById('in-phone').value;
+      document.getElementById('out-terms').innerText = document.getElementById('in-terms').value;
+      document.getElementById('out-sig-customer').innerText = `( ${document.getElementById('in-client').value} )`;
+
+      const mgmName = document.getElementById('in-mgm-name').value.trim();
+      const mgmRole = document.getElementById('in-mgm-role').value.trim();
+      document.getElementById('out-sig-mgm').innerText = `( ${mgmName ? mgmName : 'Admin PG Trans'} )`;
+      document.getElementById('out-role-mgm').innerText = mgmRole ? mgmRole : 'Management';
+    }
+
+    // Set Default Date to Today & Due Date to +4 Days
+    const today = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(today.getDate() + 4);
+
+    document.getElementById('in-tgl').valueAsDate = today;
+    document.getElementById('in-tempo').valueAsDate = dueDate;
+
+    updateInvoiceHeader();
+    renderItems();
+  </script>
+</body>
+</html>
